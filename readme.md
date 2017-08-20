@@ -1,4 +1,25 @@
-# 一个由 NodeJS + Express 框架搭建的简单的 API 服务
+# 由 NodeJS + Express 框架搭建的简单的 API 服务
+
+
+## 开发环境：
+
+node: v6.11.2
+
+npm: 3.10.10
+
+
+## Web 框架：
+
+Express: v4.15.4
+
+
+## 开发语言：
+
+Typescript
+
+## 开发工具:
+
+VS Code
 
 ## 安装依赖：
 
@@ -17,7 +38,7 @@
 
 1.添加一个编译的配置文件 `tsconfig.json`。
 
-2.VS Code 快捷键: `Ctrl + Shift + B`;
+2.编译快捷键（VS Code）: `Ctrl + Shift + B`;
 
 
 ## 启动服务： `node build/stock_server.js`
