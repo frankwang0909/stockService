@@ -1,6 +1,10 @@
 
 import * as express from 'express';
 
+// 导入 websocket 
+import {Server} from 'ws';
+
+// 新建一个 express 实例
 const app = express();
 
 // 查询所有股票信息
@@ -19,9 +23,35 @@ app.get('/api/stock/:id', (req, res) => {
     res.json(stocks.find(stock => stock.id == req.params.id));
 });
 
+// 新建一个 HTTP 服务
 const server = app.listen(8000, 'localhost', () => {
     console.log('服务器已启动， 地址是： http://localhost:8000');
 })
+
+//新建一个 websocket 服务
+const wsServer = new Server({
+    port:8085
+})
+
+// 连接上的客户端 集合
+let subscriptions = new Set<any>();
+
+// 有客户端连接上时，把它放在集合中
+wsServer.on('connection', websocket => {
+   subscriptions.add(websocket);
+});
+
+let msgCount = 0;
+setInterval(() => {
+    subscriptions.forEach(ws => {
+        if(ws.readyState === 1) {
+            ws.send(JSON.stringify({msgCount: msgCount++}));
+        } else {
+            subscriptions.delete(ws);
+        }
+    })
+},2000)
+
 
 // 定义 stock 
 export class Stock {

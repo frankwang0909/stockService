@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
+// 导入 websocket 
+var ws_1 = require("ws");
+// 新建一个 express 实例
 var app = express();
 // 查询所有股票信息
 app.get('/api/stock', function (req, res) {
@@ -16,9 +19,31 @@ app.get('/api/stock', function (req, res) {
 app.get('/api/stock/:id', function (req, res) {
     res.json(stocks.find(function (stock) { return stock.id == req.params.id; }));
 });
+// 新建一个 HTTP 服务
 var server = app.listen(8000, 'localhost', function () {
     console.log('服务器已启动， 地址是： http://localhost:8000');
 });
+//新建一个 websocket 服务
+var wsServer = new ws_1.Server({
+    port: 8085
+});
+// 连接上的客户端 集合
+var subscriptions = new Set();
+// 有客户端连接上时，把它放在集合中
+wsServer.on('connection', function (websocket) {
+    subscriptions.add(websocket);
+});
+var msgCount = 0;
+setInterval(function () {
+    subscriptions.forEach(function (ws) {
+        if (ws.readyState === 1) {
+            ws.send(JSON.stringify({ msgCount: msgCount++ }));
+        }
+        else {
+            subscriptions.delete(ws);
+        }
+    });
+}, 2000);
 // 定义 stock 
 var Stock = (function () {
     function Stock(id, name, price, rating, desc, categories) {
